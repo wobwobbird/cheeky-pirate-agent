@@ -2,9 +2,10 @@ import { betterAuth } from "better-auth";
 
 const SESSION_MAX_AGE_SECONDS = 8 * 60 * 60;
 const DEVELOPMENT_ALLOWED_HOSTS = ["localhost:*", "127.0.0.1:*"];
+const isProduction = process.env.NODE_ENV === "production";
 
 function getAllowedHosts(): string[] {
-  if (process.env.NODE_ENV === "development") {
+  if (!isProduction) {
     return DEVELOPMENT_ALLOWED_HOSTS;
   }
   const deploymentHosts = [
@@ -21,14 +22,14 @@ function getAllowedHosts(): string[] {
 function requireEnvironmentVariable(name: string): string {
   const value = process.env[name];
   if (value) return value;
-  if (process.env.NODE_ENV === "development") return `development-${name}`;
+  if (!isProduction) return `development-${name}`;
   throw new Error(`Missing required environment variable: ${name}`);
 }
 
 export const auth = betterAuth({
   baseURL: {
     allowedHosts: getAllowedHosts(),
-    protocol: process.env.NODE_ENV === "development" ? "auto" : "https",
+    protocol: isProduction ? "https" : "auto",
   },
   secret: requireEnvironmentVariable("BETTER_AUTH_SECRET"),
   session: {

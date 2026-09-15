@@ -1,3 +1,6 @@
+packages:
+  - "."
+
 minimumReleaseAgeStrict: true
 allowBuilds:
   sharp: false
