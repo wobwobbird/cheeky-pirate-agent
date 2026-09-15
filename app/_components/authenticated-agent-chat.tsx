@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { AgentChat } from "./agent-chat";
+import { AppViewContainer } from "./app-view-container";
 import { AccountControl, SignIn } from "./web-chat-auth";
 
 export async function AuthenticatedAgentChat({
@@ -11,7 +12,11 @@ export async function AuthenticatedAgentChat({
   readonly sessionless?: boolean;
 }) {
   if (process.env.NODE_ENV === "development") {
-    return <AgentChat sessionId={sessionId} sessionless={sessionless} />;
+    return (
+      <AppViewContainer>
+        <AgentChat sessionId={sessionId} sessionless={sessionless} />
+      </AppViewContainer>
+    );
   }
 
   const session = await auth.api.getSession({ headers: await headers() });
@@ -19,7 +24,9 @@ export async function AuthenticatedAgentChat({
 
   return (
     <>
-      <AgentChat sessionId={sessionId} sessionless={sessionless} />
+      <AppViewContainer>
+        <AgentChat sessionId={sessionId} sessionless={sessionless} />
+      </AppViewContainer>
       <AccountControl
         email={session.user.email}
         image={session.user.image}
